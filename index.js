@@ -5,13 +5,11 @@ const mysql = require('mysql2');
 const db = mysql.createConnection(
     {
       host: 'localhost',
-      // MySQL username,
       user: 'root',
-      // TODO: Add MySQL password here
       password: '',
-      database: 'employees_db'
+      database: 'employee_db'
     },
-    console.log(`Connected to the employees_db database.`)
+    console.log(`Connected to the employee_db database.`)
   );
 
 // list of options for user to choose from
@@ -33,7 +31,7 @@ const questions = [{
 // function to ask user questions 
 function questionsPrompt() {
     inquirer.prompt(questions). then((response) => {
-        if (answer.teamOptions === "View all employees"){
+        if (response.teamOptions === "View all employees"){
             viewEmployees();
         } else if ( response.teamOptions === "Add employee"){
             addEmployee();
@@ -81,16 +79,12 @@ function viewDepartments() {
 }
 // function to add employees to DB
 function addEmployee() {
-    db.query("SELECT role_id, title FROM role", (err, res) => {
+    db.query("SELECT id, title FROM roles", (err, res) => {
         if(err) {
             console.log(err);
-        } console.table(res);
-        let roleId= res;
-        let ids = [];
-        roleId.foreach((id) => {
-            ids.push(id.role_id)
-        });
-        inquirer.promt([
+        } 
+        console.table(res);
+        inquirer.prompt([
             {
                 type: "input",
                 name: "first_name",
@@ -104,7 +98,7 @@ function addEmployee() {
                 type: "list",
                 name: "role_id",
                 message: "What is the employees role?",
-                choices: ids,
+                choices: res.map(({id,title}) => ({value: id, name: title})),
             },
     ]).then((response) => {
         console.log(response);
@@ -119,41 +113,32 @@ function addEmployee() {
 }
 // function to update roles on DB
 function updateRole() {
-    db.query("SELECT employee_id, employee.first_name, employee.last_name FROM employees", (err, res) => {
+    db.query("SELECT id, first_name, last_name FROM employee", (err, res) => {
         if(err) {
             console.log(err);
         }
         console.log("Showing employees");
         console.table(res);
-        let ids = [];
-        res.forEach((employee) => {
-            ids.push(employee.id);
-        });
         inquirer.prompt ([{
             type: "list",
             name: "id",
             message: "Who's role would you like to update?",
-            choices: ids,
+            choices: res.map(({id, first_name, last_name}) => ({value:id , name:`${first_name} ${last_name}`}))
         },
     ]).then((response) => {
         let employeeID = response.id;
-        db.query("SELECT role_id, tile FROM role", (err, res) => {
+        db.query("SELECT id, title FROM roles", (err, res) => {
             if (err) {
                 console.log(err);
             }
             console.log("Showing roles");
             console.table(res);
-            let roleID= res;
-            let ids = [];
-            roleID.forEach((id) => {
-                ids.push(id.role_id)
-            })
-            inquirer.promt ([
+            inquirer.prompt ([
                 {
                     type:"list",
                     name: "role_id",
                     message: "Please select a role to update to",
-                    choices: ids,
+                    choices: res.map(({id,title}) => ({value: id, name: title})),
                 },
             ]).then((response) => {
                 console.log(response);
