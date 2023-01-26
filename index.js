@@ -2,7 +2,6 @@ const inquirer = require('inquirer');
 //const consoleTable = require('console.table');
 const {response} = require('express');
 const mysql = require('mysql2');
-const { appendFile } = require('fs');
 const db = mysql.createConnection(
     {
       host: 'localhost',
@@ -31,7 +30,7 @@ const questions = [{
         "Quit"
     ]
 }];
-
+// function to ask user questions 
 function questionsPrompt() {
     inquirer.prompt(questions). then((response) => {
         if (answer.teamOptions === "View all employees"){
@@ -53,7 +52,7 @@ function questionsPrompt() {
         }
     })
 }
-
+// function to view employees from DB
 function viewEmployees() {
     db.query("SELECT * FROM employee", (err, res) => {
         if (err){
@@ -62,6 +61,7 @@ function viewEmployees() {
         questionsPrompt();
     })
 }
+// function to view roles from DB
 function viewRoles() {
     db.query("SELECT * FROM roles", (err, res) => {
         if (err){
@@ -70,6 +70,7 @@ function viewRoles() {
         questionsPrompt();
     })
 }
+// function to view departments from DB
 function viewDepartments() {
     db.query("SELECT * FROM department", (err, res) => {
         if (err){
@@ -78,6 +79,7 @@ function viewDepartments() {
         questionsPrompt();
     })
 }
+// function to add employees to DB
 function addEmployee() {
     db.query("SELECT role_id, title FROM role", (err, res) => {
         if(err) {
@@ -115,7 +117,7 @@ function addEmployee() {
     })
     })
 }
-
+// function to update roles on DB
 function updateRole() {
     db.query("SELECT employee_id, employee.first_name, employee.last_name FROM employees", (err, res) => {
         if(err) {
@@ -167,7 +169,7 @@ function updateRole() {
     })
     })
 }
-
+// function to add roles to employees in DB
 function addRole() {
     db.query("SELECT department.id, department.name FROM department", (err, res) => {
         if (err) {
@@ -216,6 +218,7 @@ const addDprtmnt = [
         message: "What department are you adding?",
     },
 ]
+// function to add a department to DB
 function addDepartment() {
     inquirer.prompt(addDprtmnt).then((response) => {
         console.log(response)
