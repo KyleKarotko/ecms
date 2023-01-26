@@ -35,19 +35,19 @@ function questionsPrompt() {
     inquirer.prompt(questions). then((response) => {
         if (answer.teamOptions === "View all employees"){
             viewEmployees();
-        } else if ( answer.teamOptions === "Add employee"){
+        } else if ( response.teamOptions === "Add employee"){
             addEmployee();
-        } else if ( answer.teamOptions === "Update employee role"){
+        } else if (response.teamOptions === "Update employee role"){
             updateRole();
-        } else if (answer.teamOptions === "View all roles"){
+        } else if (response.teamOptions === "View all roles"){
             viewRoles();
-        } else if (answer.teamOptions === "Add role"){
+        } else if (response.teamOptions === "Add role"){
             addRole();
-        } else if (answer.teamOptions === "View all departments"){
+        } else if (response.teamOptions === "View all departments"){
             viewDepartments();
-        } else if (answer.teamOptions === "Add department"){
+        } else if (response.teamOptions === "Add department"){
             addDepartment();
-        } else if (answer.teamOptions === "Quit"){
+        } else if (response.teamOptions === "Quit"){
             //quit writeFile(team)
         }
     })
@@ -231,3 +231,6 @@ function addDepartment() {
         })
     })
 }
+
+//Function to init app
+questionsPrompt()
