@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
-const consoleTable = require('console.table');
-const { response } = require('express');
+//const consoleTable = require('console.table');
+const {response} = require('express');
 const mysql = require('mysql2');
 const { appendFile } = require('fs');
 const db = mysql.createConnection(
@@ -33,7 +33,7 @@ const questions = [{
 }];
 
 function questionsPrompt() {
-    inquirer.prompt(questions). then((answer) => {
+    inquirer.prompt(questions). then((response) => {
         if (answer.teamOptions === "View all employees"){
             viewEmployees();
         } else if ( answer.teamOptions === "Add employee"){
@@ -209,5 +209,22 @@ function addRole() {
         })
     })
 }
-
-function addDepartment()
+const addDprtmnt = [
+    {
+        type: "input",
+        name: "department",
+        message: "What department are you adding?",
+    },
+]
+function addDepartment() {
+    inquirer.prompt(addDprtmnt).then((response) => {
+        console.log(response)
+        db.query("INSERT INTO department (name) VALUES (?)", response.department, (err, res) => {
+            if (err) {
+                console.log(err)
+            }
+            console.log("Department has been added")
+            questionsPrompt();
+        })
+    })
+}
