@@ -1,6 +1,19 @@
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
 const { response } = require('express');
+const mysql = require('mysql2');
+const { appendFile } = require('fs');
+const db = mysql.createConnection(
+    {
+      host: 'localhost',
+      // MySQL username,
+      user: 'root',
+      // TODO: Add MySQL password here
+      password: '',
+      database: 'employees_db'
+    },
+    console.log(`Connected to the employees_db database.`)
+  );
 
 // list of options for user to choose from
 const questions = [{
@@ -41,16 +54,120 @@ function questionsPrompt() {
     })
 }
 
-function viewEmployees()
+function viewEmployees() {
+    db.query("SELECT * FROM employee", (err, res) => {
+        if (err){
+            console.log(err);
+        } console.table(res);
+        questionsPrompt();
+    })
+}
+function viewRoles() {
+    db.query("SELECT * FROM roles", (err, res) => {
+        if (err){
+            console.log(err);
+        } console.table(res);
+        questionsPrompt();
+    })
+}
+function viewDepartments() {
+    db.query("SELECT * FROM department", (err, res) => {
+        if (err){
+            console.log(err);
+        } console.table(res);
+        questionsPrompt();
+    })
+}
+function addEmployee() {
+    db.query("SELECT role_id, title FROM role", (err, res) => {
+        if(err) {
+            console.log(err);
+        } console.table(res);
+        let roleId= res;
+        let ids = [];
+        roleId.foreach((id) => {
+            ids.push(id.role_id)
+        });
+        inquirer.promt([
+            {
+                type: "input",
+                name: "first_name",
+                message: "What is the empolyees first name?",
+            },
+            {   type: "input",
+                name: "last_name",
+                message: "What is the employees last name?",
+            },
+            {
+                type: "list",
+                name: "role_id",
+                message: "What is the employees role?",
+                choices: ids,
+            },
+    ]).then((response) => {
+        console.log(response);
+        db.query("INSERT INTO employee SET ?", response, (err, res) => {
+            if (err) {
+                console.log(err);
+            } console.log("Employee added");
+            questionsPrompt()
+        })
+    })
+    })
+}
 
-function addEmployee()
-
-function updateRole()
-
-function viewRoles()
+function updateRole() {
+    db.query("SELECT employee_id, employee.first_name, employee.last_name FROM employees", (err, res) => {
+        if(err) {
+            console.log(err);
+        }
+        console.log("Showing employees");
+        console.table(res);
+        let ids = [];
+        res.forEach((employee) => {
+            ids.push(employee.id);
+        });
+        inquirer.prompt ([{
+            type: "list",
+            name: "id",
+            message: "Who's role would you like to update?",
+            choices: ids,
+        },
+    ]).then((response) => {
+        let employeeID = response.id;
+        db.query("SELECT role_id, tile FROM role", (err, res) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log("Showing roles");
+            console.table(res);
+            let roleID= res;
+            let ids = [];
+            roleID.forEach((id) => {
+                ids.push(id.role_id)
+            })
+            inquirer.promt ([
+                {
+                    type:"list",
+                    name: "role_id",
+                    message: "Please select a role to update to",
+                    choices: ids,
+                },
+            ]).then((response) => {
+                console.log(response);
+                db.query("UPDATE employee SET role_id = ? WHERE id = ?", [response.role_id, employeeID], (err, res) => {
+                    if (err) {
+                        console.log(err)
+                    }
+                    console.log("Role updated")
+                    questionsPrompt();
+                })
+            })
+        })
+    })
+    })
+}
 
 function addRole()
-
-function viewDepartments()
 
 function addDepartment()
