@@ -168,6 +168,46 @@ function updateRole() {
     })
 }
 
-function addRole()
+function addRole() {
+    db.query("SELECT department.id, department.name FROM department", (err, res) => {
+        if (err) {
+            console.log(err)
+        }
+        console.log("Available departments to chose from")
+        console.table(res);
+        let departmentID= res
+        let ids = []
+        departmentID.forEach((id) => {
+            ids.push(id.id);
+        })
+        inquirer.prompt([
+            {
+                type: "input",
+                name: "title",
+                message: "What role are you adding?",
+            },
+            {
+                type: "input",
+                name: "salary",
+                message: "What is the salary for said role?",
+            },
+            {
+                type: "input",
+                name: "department_id",
+                message: "What department is this in?",
+                choices: ids,
+            },
+        ]).then((response) => {
+            console.log(response);
+            db.query("INSERT INTO role SET ?", response, (err, res) => {
+                if (err) {
+                    console.log(err)
+                }
+                console.log("Done adding role")
+                questionsPrompt();
+            })
+        })
+    })
+}
 
 function addDepartment()
