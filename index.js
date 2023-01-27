@@ -1,5 +1,4 @@
 const inquirer = require('inquirer');
-//const consoleTable = require('console.table');
 const {response} = require('express');
 const mysql = require('mysql2');
 const db = mysql.createConnection(
@@ -46,7 +45,7 @@ function questionsPrompt() {
         } else if (response.teamOptions === "Add department"){
             addDepartment();
         } else if (response.teamOptions === "Quit"){
-            //quit writeFile(team)
+            process(exit)
         }
     })
 }
@@ -126,7 +125,7 @@ function updateRole() {
             choices: res.map(({id, first_name, last_name}) => ({value:id , name:`${first_name} ${last_name}`}))
         },
     ]).then((response) => {
-        let employeeID = response.id;
+        const employeeID = response.id;
         db.query("SELECT id, title FROM roles", (err, res) => {
             if (err) {
                 console.log(err);
@@ -162,8 +161,8 @@ function addRole() {
         }
         console.log("Available departments to chose from")
         console.table(res);
-        let departmentID= res
-        let ids = []
+        const departmentID= res
+        const ids = []
         departmentID.forEach((id) => {
             ids.push(id.id);
         })
