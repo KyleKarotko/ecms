@@ -32,3 +32,4 @@ The following images show the applications functionality and appearance.
 https://github.com/KyleKarotko/ecms
 
 ## Video of running application
+https://drive.google.com/file/d/1iw9ay5JvvgZFF7qIQLADkZZ5aO2m1-iL/view
